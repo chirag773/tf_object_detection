@@ -95,9 +95,27 @@ python3 labelImg.py [IMAGE_PATH] [PRE-DEFINED CLASS FILE]
 ###### For more detail about installation on other platform other than LINUX and how to convert images into .xml file go to [https://github.com/tzutalin/labelImg](https://github.com/tzutalin/labelImg) or refer to this [video](https://www.youtube.com/watch?v=K_mFnvzyLvc&list=PLQVvvaa0QuDcNK5GeCQnxYnSSaar2tpku&index=3)
 
 
-5. Once you done that make **two dir** in your images dir **test and train** copy **90%** of your images with thier xml file into **train dir** and **10%** of remaning images with thier xml into **test dir**
+5. Once you done that make **two dir** in your images directory **test and train** copy **90%** of your images with thier      xml file into **train** directory and **10%** of remaning images with thier xml into **test** directory
 
-6. Make a new dir `mkdir custom_object_detection` move you'r **images** dir itno it. In the same dir i.e                        custom_object_detection make **two** file **xml_to_csv.py and generate_tfrecord.py** 
+6. Make a new dir `mkdir custom_object_detection` move you'r **images** directory itno it. In the same dir i.e                  custom_object_detection make **two** file **xml_to_csv.py and generate_tfrecord.py**  and also make **training** d          directory and **data** directory which we will use later.
+
+## At this point, you should have the following structure, 
+
+```
+custom_object_detection
+-data/
+--test_labels.csv
+--train_labels.csv
+-images/
+--test/
+---testingimages.jpg
+--train/
+---testingimages.jpg
+--...yourimages.jpg
+-training
+-xml_to_csv.py
+-generate_tfrecord.py
+```
 
 7. Open xml_to_csv.py into you'r favourite editor copy below code into it.
 
@@ -132,7 +150,8 @@ def main():
     for directory in ['train','test']: # looping to all your train and test dir 
         image_path = os.path.join(os.getcwd(), 'images/{}'.format(directory)) 
         xml_df = xml_to_csv(image_path)    # converting xml to csv
-        xml_df.to_csv('data/{}_labels.csv'.format(directory), index=None) # saving it into two different file train and test
+        xml_df.to_csv('data/{}_labels.csv'.format(directory), index=None) # saving it into two different file train and test 
+                                                                          # into data directory
         print('Successfully converted xml to csv.')
 
 
@@ -245,12 +264,27 @@ if __name__ == '__main__':
 ```
 and save it
 
-**Note**:- If you have more than one class change class_text_to_init function into ```def class_text_to_int(row_label):
+**Note**:- If you have more than one class change class_text_to_init function into 
+
+```def class_text_to_int(row_label):
     if row_label == 'stapler':
-        return 1
+        return 1  #here add more class if you want to train on multiple class 
     else:
         None
-        ```
+```
+
+9.  Now run You'r xml_to_csv.py by using `python xml_to_csv.py` this will convert all your images into scv file and stored       it into `data/train_labels.csv` and `data/test_labels.csv`
+
+10. Now run generate_tfrecord.py by using
+```
+python3 generate_tfrecord.py --csv_input=data/train_labels.csv --output_path=data/train.record --image_dir=images/
+
+python3 generate_tfrecord.py --csv_input=data/test_labels.csv --output_path=data/test.record --image_dir=images/
+
+```
+this will create test.record and train.record file into `data/` directory
+
+10. 
         
         
 
