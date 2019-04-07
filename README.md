@@ -12,7 +12,7 @@ custom object detection using tensorflow object-detection-api
 # Setup
 1. Go to [tensorflow/model](https://github.com/tensorflow/models) clone this repository
 2. To run your tensorflow-object-detection-api we need to configure add some Dependencies
-   ```
+   ```bash
    # For CPU
    pip install tensorflow
    # For GPU
@@ -21,13 +21,13 @@ custom object detection using tensorflow object-detection-api
        
   The remaining libraries can be installed
   
-  
+  ```bash
   sudo apt-get install protobuf-compiler python-pil python-lxml python-tk
   pip install --user Cython
   pip install --user contextlib2
   pip install --user jupyter
   pip install --user matplotlib`  
-  
+ ```
   
   
 ## Protobuf Compilation
@@ -38,7 +38,7 @@ must be compiled. This should be done by running the following command from
 the tensorflow/models/research/ directory:
 
 
-``` bash
+```bash
 # From tensorflow/models/research/
 protoc object_detection/protos/*.proto --python_out=.
 ```
@@ -93,7 +93,8 @@ sudo python3 setup.py install
 3. Once you Download all the images then we need to convert all the images into `.xml` file for further use to convert it        into `.csv` file so for that go to [Labeling-images](https://github.com/tzutalin/labelImg.git) and clone the repo by using    `git clone https://github.com/tzutalin/labelImg.git` 
 4. Once you clone it now you need to setup envoirment to use it run the below command 
 
-```sudo apt-get install pyqt5-dev-tools
+```bash
+sudo apt-get install pyqt5-dev-tools
 sudo pip3 install -r requirements/requirements-linux-python3.txt
 cd labelImg
 make qt5py3
@@ -109,7 +110,7 @@ python3 labelImg.py [IMAGE_PATH] [PRE-DEFINED CLASS FILE]
 
 ## At this point, you should have the following structure, 
 
-```
+```bash
 custom_object_detection
 -data/
 --test_labels.csv
@@ -127,7 +128,8 @@ custom_object_detection
 
 7. Open xml_to_csv.py into you'r favourite editor copy below code into it.
 
-```import os
+```python
+import os
 import glob
 import pandas as pd
 import xml.etree.ElementTree as ET
@@ -169,7 +171,8 @@ and save the file
 
 8. Now open generate_tfrecord.py and copy the below code into it.
 
-```"""
+```python
+"""
 Usage:
   # From tensorflow/models/
   # Create train data:
@@ -274,9 +277,12 @@ and save it
 
 **Note**:- If you have more than one class change class_text_to_init function into 
 
-```def class_text_to_int(row_label):
+```python
+# if you want to more class just add more if condition
+
+def class_text_to_int(row_label):
     if row_label == 'stapler':
-        return 1  #here add more class if you want to train on multiple class 
+        return 1  
     else:
         None
 ```
@@ -284,7 +290,8 @@ and save it
 9.  Now run You'r xml_to_csv.py by using `python xml_to_csv.py` this will convert all your images into scv file and stored       it into `data/train_labels.csv` and `data/test_labels.csv`
 
 10. Now run generate_tfrecord.py by using
-```
+
+```bash
 python3 generate_tfrecord.py --csv_input=data/train_labels.csv --output_path=data/train.record --image_dir=images/
 
 python3 generate_tfrecord.py --csv_input=data/test_labels.csv --output_path=data/test.record --image_dir=images/
@@ -300,7 +307,7 @@ I am going to go with mobilenet, using the following checkpoint and configuratio
 
 Run the below code in you'r terminal in `custom_object_detection` folder.
 
-```
+```bash
 wget https://raw.githubusercontent.com/tensorflow/models/master/research/object_detection/samples/configs/ssd_mobilenet_v1_pets.config
 
 wget http://download.tensorflow.org/models/object_detection/ssd_mobilenet_v1_coco_11_06_2017.tar.gz
@@ -311,7 +318,7 @@ wget http://download.tensorflow.org/models/object_detection/ssd_mobilenet_v1_coc
 
 12. Open `ssd_mobilenet_v1_pets.config` in you'r favourite editor change the below code or paste all the given below code into it.
 
-```
+```python
 # SSD with Mobilenet v1, configured for the stapler dataset.
 # Users should configure the fine_tune_checkpoint field in the train config as
 # well as the label_map_path and input_path fields in the train_input_reader and
@@ -509,7 +516,7 @@ eval_input_reader: {
 
 13. Inside training dir, add object-detection.pbtxt:
 
-```
+```bash
 # you can add more item as per you class length in my case there is only one class
 item {
   id: 1
@@ -524,7 +531,7 @@ item {
 
 16.And now, the moment of truth! From within models/object_detection:.
 
-```
+```bash
 python3 train.py --logtostderr --train_dir=training/ --pipeline_config_path=training/ssd_mobilenet_v1_pets.config
 ```
 
