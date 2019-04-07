@@ -21,13 +21,13 @@ custom object detection using tensorflow object-detection-api
        
   The remaining libraries can be installed
   
-  ```python
-    sudo apt-get install protobuf-compiler python-pil python-lxml python-tk
-    pip install --user Cython
-    pip install --user contextlib2
-    pip install --user jupyter
-    pip install --user matplotlib`  
-   ```
+  
+  sudo apt-get install protobuf-compiler python-pil python-lxml python-tk
+  pip install --user Cython
+  pip install --user contextlib2
+  pip install --user jupyter
+  pip install --user matplotlib`  
+  
   
   
 ## Protobuf Compilation
