@@ -620,5 +620,5 @@ Here are a few of my [results](https://github.com/chirag773/tf_object_detection/
 Overall, I am extremely pleased at how well this all works, and, even when you have a very small dataset, you can still have success, and only need to train a model for about an hour (on a decent GPU anyway) using transfer learning. Very cool!
 
 Extra!!
-If you want to test your object_detction_tf_api model real time download the [object_detection_tutorial_tensorflow.py]() put it into models/research/objection_detection/ and run it by `python object_detection_tutorial_tensorflow.py`. 
+If you want to test your object_detction_tf_api model real time download the [object_detection_tutorial_tensorflow.py](https://github.com/chirag773/tf_object_detection/blob/master/object_detection_tutorial_tensorflow.py) put it into models/research/objection_detection/ and run it by `python object_detection_tutorial_tensorflow.py`. 
 
