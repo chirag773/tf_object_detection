@@ -459,7 +459,7 @@ model {
 }
 
 train_config: {
-  batch_size: 24    # you can also change the batch size
+  batch_size: 10    # you can also change the batch size
   optimizer {
     rms_prop_optimizer: {
       learning_rate: {
@@ -477,11 +477,11 @@ train_config: {
   fine_tune_checkpoint: "ssd_mobilenet_v1_coco_11_06_2017/model.ckpt"
   from_detection_checkpoint: true
   load_all_detection_checkpoint_vars: true
-  # Note: The below line limits the training process to 200K steps, which we
+  # Note: The below line limits the training process to 20K steps, which we
   # empirically found to be sufficient enough to train the pets dataset. This
   # effectively bypasses the learning rate schedule (the learning rate will
   # never decay). Remove the below line to train indefinitely.
-  num_steps: 200000
+  num_steps: 20000
   data_augmentation_options {
     random_horizontal_flip {
     }
@@ -496,7 +496,7 @@ train_input_reader: {
   tf_record_input_reader {
     input_path: "data/train.record"   # input training data 
   }
-  label_map_path: "data/object-detection.pbtxt"  # path where label_map
+  label_map_path: "training/object-detection.pbtxt"  # path where label_map
 }
 
 eval_config: {
@@ -558,6 +558,64 @@ Looks good enough, but does it detect stapler?!
 
 In order to use the model to detect things, we need to export the graph
 
- 
- 
+
+Luckily for us, in the models/research/object_detection directory, there is a script that does this for us: export_inference_graph.py
+
+To run this, you just need to pass in your checkpoint and your pipeline config, then wherever you want the inference graph to be placed. For example:
+
+
+```bash
+python3 export_inference_graph.py \
+    --input_type image_tensor \
+    --pipeline_config_path training/ssd_mobilenet_v1_pets.config \
+    --trained_checkpoint_prefix training/model.ckpt-10856 \   
+    --output_directory stappler_model_graphs   
+```
+Your checkpoint files should be in the training directory. Just look for the one with the largest step (the largest number after the dash), and that's the one you want to use. Next, make sure the `pipeline_config_path` is set to whatever config file you chose, and then finally choose the name for the output directory, I went with `stappler_model_graphs`
+
+Run the above command from models/research/object_detection
+
+If you get an error about no module named 'nets', then you need to re run:
+
+```bash
+# From tensorflow/models/research/
+export PYTHONPATH=$PYTHONPATH:`pwd`:`pwd`/slim
+# switch back to object_detection after this and re run the above command
+```
+
+Otherwise, you should have a new directory, in my case, mine is `stappler_model_graphs`, inside it, I have new checkpoint data, a `saved_model` directory, and, most importantly, the forzen_inference_graph.pb file.
+
+Now, we're just going to use the sample notebook, edit it, and see how our model does on some testing images. I copied some of my `models/research/object_detection/images/test images` into the `models/research/object_detection/test_images` directory, and renamed them to be image3.jpg, image4.jpg...etc. or you can download new image and move it into `models/research/object_detection/test_images` directory
+
+ ```python
+ # What model to download.
+MODEL_NAME = 'stappler_model_graphs'
+
+# Path to frozen detection graph. This is the actual model that is used for the object detection.
+PATH_TO_FROZEN_GRAPH = MODEL_NAME + '/frozen_inference_graph.pb'
+
+# List of the strings that is used to add correct label for each box.
+PATH_TO_LABELS = os.path.join('training', 'object-detection.pbtxt')
+```
+
+Next, we can just delete the entire Download Model section, since we don't need to download anymore.
+
+Finally, in the Detection section, change the TEST_IMAGE_PATHS var to:
+
+```python
+# For the sake of simplicity we will use only 2 images:
+# image1.jpg
+# image2.jpg
+# If you want to test the code with your images, just add path to the images to the TEST_IMAGE_PATHS.
+PATH_TO_TEST_IMAGES_DIR = 'test_images'
+TEST_IMAGE_PATHS = [ os.path.join(PATH_TO_TEST_IMAGES_DIR, 'Images{}.jpg'.format(i)) for i in range(3,6) ]
+
+# Size, in inches, of the output images.
+IMAGE_SIZE = (12, 8)
+```
+With that, you can go to the Cell menu option, and then "Run All."
+
+Here are a few of my [results](https://github.com/chirag773/tf_object_detection/blob/master/object_detection_tutorial.ipynb):
+
+Overall, I am extremely pleased at how well this all works, and, even when you have a very small dataset, you can still have success, and only need to train a model for about an hour (on a decent GPU anyway) using transfer learning. Very cool!
 
