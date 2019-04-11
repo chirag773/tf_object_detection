@@ -292,9 +292,9 @@ def class_text_to_int(row_label):
 10. Now run generate_tfrecord.py by using
 
 ```bash
-python3 generate_tfrecord.py --csv_input=data/train_labels.csv --output_path=data/train.record --image_dir=images/
+python3 generate_tfrecord.py --csv_input=data/train_labels.csv --output_path=data/train.record --image_dir=images/train
 
-python3 generate_tfrecord.py --csv_input=data/test_labels.csv --output_path=data/test.record --image_dir=images/
+python3 generate_tfrecord.py --csv_input=data/test_labels.csv --output_path=data/test.record --image_dir=images/test
 
 ```
 this will create test.record and train.record file into `data/` directory
